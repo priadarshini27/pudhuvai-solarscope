@@ -521,6 +521,11 @@ The performance ratio is an assumed factor representing system losses and should
 
 **Output:** Tested application, README, technical report and demonstration.
 
+**Status (Nov 2026):**
+- **Tests:** 41 offline tests in `tests/`, covering every item in the task list above. The dashboard tests use Streamlit's AppTest with a synthetic forecast.
+- **Documents:** `README.md` (setup, running, pipeline steps, attribution) and `doc/technical_report.md`.
+- **Deployment:** still to do.
+
 ## 13. Suggested Technology Stack
 
 | Area | Suggested tools |
