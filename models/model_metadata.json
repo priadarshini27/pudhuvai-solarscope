@@ -1,0 +1,78 @@
+{
+  "created": "2026-11-11T15:39:56.161360+05:30",
+  "version": "v2",
+  "model": "random_forest",
+  "variant": "location_blind",
+  "target": "direct",
+  "params": {
+    "max_depth": 6,
+    "min_samples_leaf": 5,
+    "max_features": 0.6
+  },
+  "features": [
+    "forecast_shortwave_radiation",
+    "forecast_temperature_mean",
+    "forecast_temperature_max",
+    "forecast_temperature_min",
+    "forecast_humidity_mean",
+    "forecast_precipitation_sum",
+    "forecast_wind_speed_mean",
+    "lead_days",
+    "doy_sin",
+    "doy_cos",
+    "climatology_solar_radiation",
+    "clear_sky_radiation",
+    "region_id"
+  ],
+  "excluded_features": {
+    "forecast_cloud_cover_mean": "archived ECMWF cloud cover drifted from late 2025 (see notebook 04 \u00a74)"
+  },
+  "forecast_model": "ecmwf_ifs025",
+  "lead_days": [
+    1,
+    2,
+    3
+  ],
+  "local_day_utc_offset": "+05:30",
+  "nasa_time_standard": "LST",
+  "trained_on": {
+    "from": "2024-03-07",
+    "to": "2025-11-03",
+    "rows": 7268
+  },
+  "climatology_file": "data/processed/climatology.csv",
+  "validation_mae": 0.7324797740108633,
+  "test": {
+    "ml_model": {
+      "mae": 0.5955,
+      "rmse": 0.837,
+      "r2": 0.6016,
+      "bias": 0.1049
+    },
+    "raw_forecast": {
+      "mae": 0.7112,
+      "rmse": 0.9903,
+      "r2": 0.4422,
+      "bias": 0.4509
+    },
+    "bias_corrected_forecast": {
+      "mae": 0.6242,
+      "rmse": 0.888,
+      "r2": 0.5515,
+      "bias": 0.1692
+    },
+    "climatology": {
+      "mae": 0.7734,
+      "rmse": 1.0641,
+      "r2": 0.356,
+      "bias": 0.0821
+    }
+  },
+  "v1_all_features_test": {
+    "mae": 0.654,
+    "rmse": 0.854,
+    "r2": 0.5852,
+    "bias": -0.19
+  },
+  "selection_rule": "lowest validation MAE (fit on train) among tuned models x targets x regional variants; refit on train+validation"
+}

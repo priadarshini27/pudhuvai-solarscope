@@ -1,0 +1,42 @@
+{
+  "version": "v2",
+  "model": "random_forest",
+  "variant": "location_blind",
+  "target": "direct",
+  "validation_mae": 0.7324797740108633,
+  "test": {
+    "ml_model": {
+      "mae": 0.5955,
+      "rmse": 0.837,
+      "r2": 0.6016,
+      "bias": 0.1049
+    },
+    "raw_forecast": {
+      "mae": 0.7112,
+      "rmse": 0.9903,
+      "r2": 0.4422,
+      "bias": 0.4509
+    },
+    "bias_corrected_forecast": {
+      "mae": 0.6242,
+      "rmse": 0.888,
+      "r2": 0.5515,
+      "bias": 0.1692
+    },
+    "climatology": {
+      "mae": 0.7734,
+      "rmse": 1.0641,
+      "r2": 0.356,
+      "bias": 0.0821
+    }
+  },
+  "v1_all_features_test": {
+    "mae": 0.654,
+    "rmse": 0.854,
+    "r2": 0.5852,
+    "bias": -0.19
+  },
+  "excluded_features": {
+    "forecast_cloud_cover_mean": "archived ECMWF cloud cover drifted from late 2025 (see notebook 04 \u00a74)"
+  }
+}

@@ -165,6 +165,8 @@ The final features should be limited to variables that are available consistentl
 
 Latitude and longitude are recorded as metadata but are not used as model features: with only four fixed representative points they carry the same information as `region_id` and cannot generalise to new locations.
 
+**Exclusion found in Module 6:** `forecast_cloud_cover_mean` is excluded from the final model. From late 2025, ECMWF's archived cloud-cover forecasts rose by 15–35 percentage points in every month compared with a year earlier, while forecast and NASA radiation did not fall. This is an inconsistency in how the input is produced, not a real change in the weather, and it made a model trained on 2024–25 under-predict (see `notebooks/04_model_experiments.ipynb` §4).
+
 ### 7.4 Target variable
 
 `actual_solar_radiation` is the NASA POWER `ALLSKY_SFC_SW_DWN` value for the target date and matching representative location.
@@ -306,6 +308,20 @@ To test whether accounting for region improves accuracy, compare:
 3. **Per-region models** – one model trained separately for each region.
 
 Report MAE, RMSE and R² for each variant separately for every region, alongside the raw Open-Meteo and climatology baselines. Select the regional strategy based on validation performance, and confirm it on the test period.
+
+**Result (Module 6):**
+- Region-aware and location-blind models scored within ±0.02 kWh/m²/day of each other on validation. Per-region models were consistently worst.
+- The selection rule chose a **location-blind Random Forest** (direct target) by a small margin. The forecast inputs already differ by region, so explicit region features added little with one training year per season.
+- The final model scored on the held-out test year (Nov 2025 – Nov 2026):
+
+| | Test MAE (kWh/m²/day) | Test R² |
+|---|---|---|
+| Final model (location-blind Random Forest) | **0.595** | **0.60** |
+| Raw ECMWF forecast | 0.711 | 0.44 |
+| Bias-corrected forecast | 0.624 | – |
+
+- The improvement over the raw forecast holds for every lead (15–17 %) and every region (14–19 %).
+- The regional comparison should be repeated as more archive years accumulate.
 
 ## 11. Live Prediction Workflow
 
@@ -575,6 +591,7 @@ The category thresholds should be selected using domain references or a document
 8. **Rooftop estimate assumptions:** The calculator is indicative and cannot account for every installation-specific factor.
 9. **Regional climate differences:** The regions have different monsoon timing, and the short forecast archive contains only a few monsoon cycles per region. Region-aware features reduce, but cannot fully remove, the risk of poor performance in a region's unusual seasons. Per-region metrics must be reported.
 10. **Coastal representative points:** Coastal coordinates may fall in grid cells dominated by ocean, which can distort both forecasts and NASA estimates. Representative points must be checked and documented.
+11. **Forecast input drift (observed):** archived ECMWF cloud cover changed behaviour from late 2025, and the raw forecast's radiation bias grew from +0.26 to +0.45 kWh/m²/day between 2024 and 2026. Live inputs must be checked against the training distribution, and the model must be retrained periodically.
 
 ## 17. Future Enhancements
 
