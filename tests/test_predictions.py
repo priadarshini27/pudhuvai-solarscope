@@ -179,3 +179,17 @@ def test_drift_check_flags_unusual_model_inputs_only():
     assert (p["status"] == "check_inputs").all()
     assert p["notes"].str.contains("forecast_temperature").all()
     assert not p["notes"].str.contains("unusual inputs: .*cloud_cover", regex=True).any()
+
+
+def test_metadata_features_match_saved_models():
+    """model_metadata.json must list exactly the inputs each saved pipeline uses."""
+    import joblib, json
+    from src.preprocessing.build_training_data import FEATURES
+    for sub in ("", "evaluated/"):
+        meta = json.loads((ROOT / "models" / sub / "model_metadata.json").read_text(encoding="utf-8"))
+        model = joblib.load(ROOT / "models" / sub / "solar_model.joblib")
+        est = model.estimator_ if hasattr(model, "estimator_") else model
+        if hasattr(est, "named_steps"):
+            used = {c for c in est.named_steps["prep"].get_feature_names_out() if c in FEATURES}
+            assert used == {c for c in meta["features"] if c != "region_id"}
+        assert not set(meta["features"]) & set(meta.get("excluded_features", {}))

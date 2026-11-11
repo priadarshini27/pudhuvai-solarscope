@@ -8,7 +8,6 @@ direct labels, and notebooks print the underlying table.
 from __future__ import annotations
 
 import matplotlib as mpl
-import matplotlib.pyplot as plt
 
 REGION_ORDER = ["puducherry", "karaikal", "mahe", "yanam"]
 REGION_LABEL = {"puducherry": "Puducherry", "karaikal": "Karaikal", "mahe": "Mahe", "yanam": "Yanam"}

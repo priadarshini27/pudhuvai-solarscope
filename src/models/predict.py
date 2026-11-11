@@ -28,6 +28,7 @@ log = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[2]
 IST = timezone(timedelta(hours=5, minutes=30))
+MODEL_NAMES = {"random_forest": "Random Forest", "xgboost": "XGBoost", "linear": "Linear (ridge) regression"}
 
 
 @dataclass
@@ -203,6 +204,7 @@ class SolarPredictor:
             if run_meta.get("run_initialisation_utc") else None,
             "model_version": self.model_meta.get("version"),
             "model": f"{self.model_meta['model']} / {self.model_meta['variant']} / {self.model_meta['target']}",
+            "model_name": MODEL_NAMES.get(self.model_meta["model"], self.model_meta["model"]),
             "grid": grid.to_dict(orient="records"),
         }
         result = PredictionResult(preds, warnings, meta)

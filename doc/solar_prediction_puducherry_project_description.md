@@ -522,7 +522,7 @@ The performance ratio is an assumed factor representing system losses and should
 **Output:** Tested application, README, technical report and demonstration.
 
 **Status (Nov 2026):**
-- **Tests:** 41 offline tests in `tests/`, covering every item in the task list above. The dashboard tests use Streamlit's AppTest with a synthetic forecast.
+- **Tests:** 42 offline tests in `tests/`, covering every item in the task list above. The dashboard tests use Streamlit's AppTest with a synthetic forecast.
 - **Documents:** `README.md` (setup, running, pipeline steps, attribution) and `doc/technical_report.md`.
 - **Deployment:** still to do.
 
@@ -544,63 +544,37 @@ The performance ratio is an assumed factor representing system losses and should
 
 A practical implementation can use Streamlit for the dashboard and embed a Leaflet-based map for reliable polygon selection and drill-down behaviour.
 
-## 14. Proposed Project Folder Structure
+## 14. Project Folder Structure
 
 ```text
-solar-prediction-puducherry/
+pudhuvai-solarscope/
 │
+├── config/                 locations.json, pipeline.json (all pipeline decisions)
 ├── data/
-│   ├── raw/
-│   │   ├── nasa_solar_history/
-│   │   └── openmeteo_archived_forecasts/
-│   ├── processed/
-│   │   ├── nasa_solar_history.csv
-│   │   ├── archived_forecasts.csv
-│   │   └── solar_model_training.csv
-│   └── geo/
-│       ├── puducherry_regions.geojson
-│       └── administrative_subdivisions.geojson
-│
-├── notebooks/
-│   ├── 02_preprocessing.ipynb        (Module 4; archive audit is scripts/audit_archive_coverage.py)
-│   ├── 03_eda_baselines.ipynb        (Module 5)
-│   └── 04_model_experiments.ipynb    (Module 6)
-│
+│   ├── raw/                cached API responses and boundary downloads (git-ignored)
+│   ├── processed/          nasa_solar_history.csv, archived_forecasts.csv,
+│   │                       solar_model_training.csv, climatology.csv
+│   ├── geo/                puducherry_regions.geojson, administrative_subdivisions.geojson
+│   └── predictions/        live prediction log (git-ignored)
+├── doc/                    project description, technical report
+├── models/                 solar_model.joblib (deployed pipeline incl. preprocessing),
+│   │                       model_metadata.json, training_reference.csv
+│   └── evaluated/          model whose test scores are reported
+├── notebooks/              02_preprocessing, 03_eda_baselines, 04_model_experiments
+├── results/                archive_audit/, preprocessing/, eda/, baselines/, models/,
+│                           metrics.json, prediction_comparison.png
+├── scripts/                audit_archive_coverage, collect_data, retrain_production,
+│                           predict_live, prepare_geo
 ├── src/
-│   ├── data_collection/
-│   │   ├── nasa_power.py
-│   │   └── openmeteo_archive.py
-│   ├── preprocessing/
-│   │   ├── clean_data.py
-│   │   └── build_training_data.py
-│   ├── models/
-│   │   ├── train.py
-│   │   ├── evaluate.py
-│   │   └── predict.py
-│   ├── services/
-│   │   └── live_forecast.py
-│   ├── geospatial/
-│   │   └── map_data.py
-│   └── dashboard/
-│       └── app.py
-│
-├── models/
-│   ├── solar_model.joblib
-│   └── preprocessing_pipeline.joblib
-│
-├── results/
-│   ├── metrics.json
-│   ├── prediction_comparison.png
-│   └── regional_analysis/
-│
-├── config/
-│   └── locations.json
-│
-├── tests/
-│   ├── test_data_processing.py
-│   ├── test_predictions.py
-│   └── test_calculator.py
-│
+│   ├── data_collection/    nasa_power.py, openmeteo_archive.py
+│   ├── preprocessing/      clean_data.py, build_training_data.py
+│   ├── models/             train.py, evaluate.py, predict.py
+│   ├── services/           live_forecast.py, rooftop.py
+│   ├── geospatial/         map_data.py
+│   ├── dashboard/          app.py
+│   └── viz.py
+├── tests/                  test_data_processing, test_predictions, test_geo,
+│                           test_calculator, test_dashboard
 ├── requirements.txt
 └── README.md
 ```

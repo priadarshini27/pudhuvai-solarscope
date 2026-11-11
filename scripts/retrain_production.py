@@ -27,8 +27,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from src.models.evaluate import regression_metrics  # noqa: E402
-from src.models.train import build_estimator  # noqa: E402
-from src.preprocessing.build_training_data import TARGET, build_features, load_config  # noqa: E402
+from src.models.train import build_estimator, model_input_features  # noqa: E402
+from src.preprocessing.build_training_data import FEATURES, TARGET, build_features, load_config  # noqa: E402
 from src.preprocessing.clean_data import (NASA_TARGET, clean_forecasts, clean_nasa,  # noqa: E402
                                           load_forecasts, load_nasa)
 
@@ -68,9 +68,10 @@ def main():
                .groupby(data["target_date"].dt.year)["err"].mean().round(3).to_dict())
 
     meta = {
-        **{k: ev[k] for k in ("model", "variant", "target", "params", "features", "excluded_features",
+        **{k: ev[k] for k in ("model", "variant", "target", "params", "excluded_features",
                               "forecast_model", "lead_days", "local_day_utc_offset", "nasa_time_standard",
                               "climatology_file", "selection_rule")},
+        "features": model_input_features(ev["variant"], exclude),
         "version": f"{ev['version']}-production",
         "created": pd.Timestamp.now(tz="Asia/Kolkata").isoformat(),
         "trained_on": {"from": str(data["target_date"].min().date()), "to": str(data["target_date"].max().date()),
@@ -84,6 +85,12 @@ def main():
         "evaluated_model": "models/evaluated/solar_model.joblib",
         "training_reference_file": "models/training_reference.csv",
     }
+    est = model.estimator_ if hasattr(model, "estimator_") else model
+    if hasattr(est, "named_steps"):
+        fitted_inputs = list(est.named_steps["prep"].get_feature_names_out())
+        expected = {c for c in meta["features"] if c != "region_id"}
+        used_base = {c for c in fitted_inputs if c in FEATURES}
+        assert used_base == expected, f"metadata features {sorted(expected)} != fitted inputs {sorted(used_base)}"
     joblib.dump(model, MODELS / "solar_model.joblib")
     (MODELS / "model_metadata.json").write_text(json.dumps(meta, indent=2, default=str), encoding="utf-8")
     ref_cols = ["target_date", "region_id", "lead_days", "grid_latitude", "grid_longitude",

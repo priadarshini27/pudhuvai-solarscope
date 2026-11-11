@@ -27,7 +27,7 @@ def main():
         sys.exit(1)
     m = result.meta
     print(f"Issued {m['issued_for_ist_date']} (IST) | forecast model {m['forecast_model']} | "
-          f"run initialised {m['run_initialisation_utc']} | ML model {m['model']} ({m['model_version']})\n")
+          f"run initialised {m['run_initialisation_utc']} | ML model {m['model_name']} ({m['model_version']})\n")
     with pd.option_context("display.width", 200, "display.max_colwidth", 80,
                            "display.float_format", "{:.2f}".format):
         print(result.predictions.drop(columns="region_id").to_string(index=False))

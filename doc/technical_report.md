@@ -130,8 +130,10 @@ A live forecast for "tomorrow" comes from the latest run and is predicted about 
 | Forecast (daily) | shortwave radiation, temperature mean/max/min, humidity mean, cloud cover mean, precipitation sum, wind speed mean |
 | Lead | `lead_days` (1–3) |
 | Season | `doy_sin`, `doy_cos` (cyclical day of year) |
-| Climatology | the region's smoothed NASA mean for that day of year (all-sky and clear-sky), **computed from 2001–2023 only**, before the training period |
+| Climatology | the region's smoothed NASA mean for that day of year (all-sky and clear-sky), **computed from 2001–2023 only**, before the training period; region-aware variants only |
 | Region | `region_id` (one-hot), in region-aware variants only |
+
+The final model is location-blind (§6.4), so it uses only the forecast, lead and season features, without cloud cover (§6.3).
 
 Fitted transforms (one-hot encoding, scaling) sit inside the model pipeline and are fitted on training rows only.
 
@@ -240,7 +242,18 @@ Regional ablation, validation MAE:
 | XGBoost · direct | 0.736 | 0.744 | 0.781 |
 | XGBoost · residual | 0.735 | 0.736 | 0.766 |
 
-**Selected:** a location-blind **Random Forest**, direct target (`max_depth=6`, `min_samples_leaf=5`, `max_features=0.6`, 400 trees), with validation MAE 0.732.
+**Selected:** a location-blind **Random Forest** (scikit-learn `RandomForestRegressor`), direct target (`max_depth=6`, `min_samples_leaf=5`, `max_features=0.6`, 400 trees), with validation MAE 0.732.
+
+**Its 10 inputs:**
+- forecast shortwave radiation;
+- forecast temperature (mean, max, min);
+- humidity;
+- precipitation;
+- wind speed;
+- `lead_days`;
+- `doy_sin` and `doy_cos`.
+
+It has no region, climatology or cloud-cover inputs. XGBoost (best validation MAE 0.735) and linear regression (0.745) were the runners-up.
 
 **On the regional ablation:**
 - Region-aware and location-blind variants are within ±0.02 of each other, which is within noise.
@@ -367,7 +380,7 @@ The dashboard is built with Streamlit, a Leaflet map (via folium) and Plotly cha
 
 ## 10. Testing
 
-There are 41 automated tests (`pytest`), all offline. The live API is replaced with synthetic data.
+There are 42 automated tests (`pytest`), all offline. The live API is replaced with synthetic data.
 
 | Area | Examples |
 |---|---|
@@ -375,6 +388,7 @@ There are 41 automated tests (`pytest`), all offline. The live API is replaced w
 | Preprocessing | all leads of a date share a split; climatology uses only its stated years; cyclical season; clipping and drop rules |
 | Train/inference consistency | the live path produces the same features and prediction as the training path on identical hourly data |
 | Live engine | 3 days × 4 regions; incomplete day → unavailable; stale run and grid mismatch warnings; API failure raises a clear error; metadata failure is non-fatal; drift flags only on inputs the model uses |
+| Model metadata | the listed features match the inputs each saved pipeline actually uses |
 | Geography | the 8 official taluks; representative points inside regions; areas close to official figures; map-click mapping |
 | Calculator | formula, linearity, missing radiation, invalid inputs |
 | Dashboard | overview renders; region and taluk selection; calculator updates; API failure shows an error and no values |

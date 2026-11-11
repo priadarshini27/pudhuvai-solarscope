@@ -1,5 +1,5 @@
 {
-  "created": "2026-11-11T16:20:42.936912+05:30",
+  "created": "2026-11-11T17:41:36.605712+05:30",
   "version": "v2",
   "model": "random_forest",
   "variant": "location_blind",
@@ -19,10 +19,7 @@
     "forecast_wind_speed_mean",
     "lead_days",
     "doy_sin",
-    "doy_cos",
-    "climatology_solar_radiation",
-    "clear_sky_radiation",
-    "region_id"
+    "doy_cos"
   ],
   "excluded_features": {
     "forecast_cloud_cover_mean": "archived ECMWF cloud cover drifted from late 2025 (see notebook 04 \u00a74)"

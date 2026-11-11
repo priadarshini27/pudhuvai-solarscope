@@ -154,3 +154,13 @@ def _drop_region_categorical(pipe: Pipeline, kind: str, exclude: tuple = ()) -> 
     steps = [(n, _preprocessor(numeric, [], scale=(kind == "linear")))
              if n == "prep" else (n, s) for n, s in steps]
     return Pipeline(steps)
+
+
+def model_input_features(variant: str, exclude: tuple = ()) -> list[str]:
+    """The columns a fitted variant actually uses as inputs (for metadata and
+    documentation). Per-region models also need `region_id`, to route rows."""
+    fs = FEATURE_SETS["region_aware" if variant == "per_region" else variant]
+    cols = list(fs["numeric"]) + list(fs["categorical"])
+    if variant == "per_region":
+        cols = [c for c in cols if c != "region_id"] + ["region_id"]
+    return [c for c in cols if c not in exclude]

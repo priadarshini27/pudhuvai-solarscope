@@ -18,7 +18,7 @@ import plotly.graph_objects as go  # noqa: E402
 import streamlit as st  # noqa: E402
 from streamlit_folium import st_folium  # noqa: E402
 
-from src.geospatial.map_data import (CATEGORY_COLOR, CATEGORY_LABEL, build_map,  # noqa: E402
+from src.geospatial.map_data import (CATEGORY_LABEL, build_map,  # noqa: E402
                                      load_layer, region_from_click, taluks_of)
 from src.models.predict import SolarPredictor  # noqa: E402
 from src.services import live_forecast  # noqa: E402
@@ -226,7 +226,7 @@ with col_panel:
 
 if not error and meta:
     st.caption(f"Forecast model **{meta['forecast_model']}**, run initialised {fmt_ist(meta['run_initialisation_utc'])} · "
-               f"retrieved {fmt_ist(meta['retrieved_utc'])} · ML model {meta['model']} ({meta['model_version']}), "
+               f"retrieved {fmt_ist(meta['retrieved_utc'])} · ML model: {meta['model_name']} ({meta['model_version']}), "
                f"trained to {model_meta['trained_on']['to']}")
 for w in warnings:
     st.warning(w, icon="⚠️")
@@ -319,6 +319,9 @@ with tab_about:
     st.markdown(f"""
 **What is predicted.** Daily total solar radiation reaching a horizontal surface (global horizontal irradiation) in **{UNIT}** for the next three days.
 The prediction is an ML correction of the ECMWF IFS 0.25° forecast (via Open-Meteo), trained against NASA POWER satellite estimates.
+
+**Model.** Random Forest regressor (scikit-learn) trained on archived ECMWF forecasts; inputs: forecast radiation, temperature (mean, max, min), humidity, precipitation, wind speed, lead time and season. It was selected over linear regression and XGBoost on a validation period
+and reduced error by 16 % compared with the raw forecast on a held-out test year (see *Forecast accuracy*).
 
 **Availability categories** are a project-defined rule, not an official classification:
 low < {cfg['categories']['low_below']}, moderate {cfg['categories']['low_below']}–{cfg['categories']['high_from']},

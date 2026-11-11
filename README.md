@@ -4,6 +4,8 @@ Three-day daily solar-radiation predictions for the four regions of the Union Te
 
 A machine-learning model corrects the ECMWF weather forecast (via [Open-Meteo](https://open-meteo.com/)). It learned the correction from archived forecasts paired with [NASA POWER](https://power.larc.nasa.gov/) satellite estimates of daily solar radiation.
 
+**Model:** Random Forest regressor (scikit-learn) trained on archived ECMWF forecasts; inputs: forecast radiation, temperature (mean, max, min), humidity, precipitation, wind speed, lead time and season. Region identity and climatology features were tested but did not improve accuracy, so the selected model does not use them (see the [technical report](doc/technical_report.md), §6.4).
+
 > **Educational decision-support tool.** Predictions are estimates from gridded data and models, not local measurements. They do not guarantee the output of any solar installation.
 
 ![Test-period error by month: ML model vs raw forecast](results/prediction_comparison.png)
@@ -80,7 +82,7 @@ Step 7 needs the geoBoundaries ADM3 file in `data/raw/geo/`. The script prints t
 .\.venv\Scripts\python -m pytest -q tests
 ```
 
-There are 41 tests, all offline: the live API is replaced with synthetic data. They cover:
+There are 42 tests, all offline: the live API is replaced with synthetic data. They cover:
 
 - daily aggregation and unit conversion;
 - cleaning and split rules;
