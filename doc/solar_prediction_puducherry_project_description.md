@@ -423,6 +423,12 @@ The application should handle API failures, missing variables, incomplete foreca
 
 **Output:** Trained model, evaluation results, plots and model metadata.
 
+**Implementation:** there are two saved models.
+- **Evaluated model** (`models/evaluated/`): fitted on train + validation by `notebooks/04_model_experiments.ipynb`. Its test-year scores are the reported accuracy.
+- **Deployed model** (`models/solar_model.joblib`): the same configuration refitted on all labelled data by `scripts/retrain_production.py`. It has no held-out test of its own, so its accuracy is quoted from the evaluated model.
+
+Periodic retraining (§17) means running `scripts/collect_data.py`, then `scripts/retrain_production.py`.
+
 ### Module 7: Live Forecast and Prediction Engine
 
 **Purpose:** Generate three-day predictions from current weather forecasts.
@@ -437,6 +443,14 @@ The application should handle API failures, missing variables, incomplete foreca
 - store prediction timestamps and model/API metadata.
 
 **Output:** Three-day solar-radiation predictions for the selected region.
+
+**Implementation:** `src/services/live_forecast.py` and `src/models/predict.py` (`SolarPredictor`); command-line use via `scripts/predict_live.py`. The engine:
+- reuses the training transformations unchanged;
+- checks that the grid cells match the training grid cells;
+- warns when the forecast run is older than 18 h or the model's training data is older than 120 days;
+- flags live inputs that are more than 3 standard deviations from the training inputs for the same region and season (±30 days). Drifted inputs the model does not use, such as cloud cover, are monitored but do not mark a prediction as doubtful;
+- marks incomplete forecast days as unavailable instead of predicting;
+- appends every prediction and its metadata to `data/predictions/prediction_log.csv`.
 
 ### Module 8: Interactive Map and Regional Dashboard
 
@@ -578,6 +592,16 @@ For a selected region, the application should display:
 - an indicative rooftop daily-energy estimate for a user-entered system capacity.
 
 The category thresholds should be selected using domain references or a documented project rule. They should not be presented as official government classifications unless an authoritative standard is identified.
+
+**Project rule (implemented in `config/pipeline.json`):**
+
+| Category | Daily radiation (kWh/m²/day) |
+|---|---|
+| Low | below 5.0 |
+| Moderate | 5.0 to under 6.0 |
+| High | 6.0 and above |
+
+The cut-offs are the lower and upper thirds (4.95 and 6.00) of NASA daily `ALLSKY_SFC_SW_DWN` values for 2001–2023, pooled over the four regions and rounded. One rule is used for all regions so they can be compared directly.
 
 ## 16. Limitations and Risk Management
 

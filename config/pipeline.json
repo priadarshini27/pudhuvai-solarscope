@@ -54,5 +54,28 @@
     "start_year": 2001,
     "end_year": 2023,
     "smoothing_window_days": 15
+  },
+  "live": {
+    "_note": "Module 7 live prediction engine settings.",
+    "forecast_endpoint": "https://api.open-meteo.com/v1/forecast",
+    "run_metadata_endpoint": "https://api.open-meteo.com/data/{model}/static/meta.json",
+    "past_days": 1,
+    "forecast_days": 5,
+    "cache_minutes": 30,
+    "max_run_age_hours": 18,
+    "model_max_age_days": 120,
+    "drift": {
+      "_note": "Warn when a live input is far from training inputs for the same region and season (+/- window days).",
+      "z_warn": 3.0,
+      "window_days": 30,
+      "monitor_only": [
+        "forecast_cloud_cover_mean"
+      ]
+    }
+  },
+  "categories": {
+    "_note": "Project-defined rule, not an official classification: terciles of NASA daily ALLSKY_SFC_SW_DWN 2001-2023 pooled over the four regions (4.95 / 6.00 kWh/m2/day), rounded.",
+    "low_below": 5.0,
+    "high_from": 6.0
   }
 }

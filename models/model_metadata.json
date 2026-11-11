@@ -1,6 +1,4 @@
 {
-  "created": "2026-11-11T15:39:56.161360+05:30",
-  "version": "v2",
   "model": "random_forest",
   "variant": "location_blind",
   "target": "direct",
@@ -35,44 +33,58 @@
   ],
   "local_day_utc_offset": "+05:30",
   "nasa_time_standard": "LST",
+  "climatology_file": "data/processed/climatology.csv",
+  "selection_rule": "lowest validation MAE (fit on train) among tuned models x targets x regional variants; refit on train+validation",
+  "version": "v2-production",
+  "created": "2026-11-11T16:21:25.267990+05:30",
   "trained_on": {
     "from": "2024-03-07",
-    "to": "2025-11-03",
-    "rows": 7268
+    "to": "2026-11-03",
+    "rows": 11564,
+    "note": "all labelled rows (train + validation + test periods)"
   },
-  "climatology_file": "data/processed/climatology.csv",
-  "validation_mae": 0.7324797740108633,
-  "test": {
-    "ml_model": {
-      "mae": 0.5955,
-      "rmse": 0.837,
-      "r2": 0.6016,
-      "bias": 0.1049
-    },
-    "raw_forecast": {
-      "mae": 0.7112,
-      "rmse": 0.9903,
-      "r2": 0.4422,
-      "bias": 0.4509
-    },
-    "bias_corrected_forecast": {
-      "mae": 0.6242,
-      "rmse": 0.888,
-      "r2": 0.5515,
-      "bias": 0.1692
-    },
-    "climatology": {
-      "mae": 0.7734,
-      "rmse": 1.0641,
-      "r2": 0.356,
-      "bias": 0.0821
+  "accuracy": {
+    "source": "test score of the evaluated model (models/evaluated), trained up to 2025-11-03; the production refit has no held-out test",
+    "test": {
+      "ml_model": {
+        "mae": 0.5955,
+        "rmse": 0.837,
+        "r2": 0.6016,
+        "bias": 0.1049
+      },
+      "raw_forecast": {
+        "mae": 0.7112,
+        "rmse": 0.9903,
+        "r2": 0.4422,
+        "bias": 0.4509
+      },
+      "bias_corrected_forecast": {
+        "mae": 0.6242,
+        "rmse": 0.888,
+        "r2": 0.5515,
+        "bias": 0.1692
+      },
+      "climatology": {
+        "mae": 0.7734,
+        "rmse": 1.0641,
+        "r2": 0.356,
+        "bias": 0.0821
+      }
     }
   },
-  "v1_all_features_test": {
-    "mae": 0.654,
-    "rmse": 0.854,
-    "r2": 0.5852,
-    "bias": -0.19
+  "in_sample_fit": {
+    "n": 11564,
+    "mae": 0.5799,
+    "rmse": 0.7812,
+    "bias": 0.0005,
+    "r2": 0.6893
   },
-  "selection_rule": "lowest validation MAE (fit on train) among tuned models x targets x regional variants; refit on train+validation"
+  "in_sample_bias_by_year": {
+    "2024": -0.014,
+    "2025": -0.034,
+    "2026": 0.056
+  },
+  "mean_change_vs_evaluated_last_60_days": -0.0638,
+  "evaluated_model": "models/evaluated/solar_model.joblib",
+  "training_reference_file": "models/training_reference.csv"
 }
