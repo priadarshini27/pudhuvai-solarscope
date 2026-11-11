@@ -352,6 +352,14 @@ The application should handle API failures, missing variables, incomplete foreca
 
 **Output:** Geographic configuration, validated GeoJSON files and interactive map layer.
 
+**Implementation:** `scripts/prepare_geo.py` builds the two map layers in `data/geo/`, and `src/geospatial/map_data.py` draws the map.
+- **Source:** geoBoundaries gbOpen IND ADM3, which gives sub-districts (taluks) from the Local Government Directory. Licence ODbL 1.0, with attribution shown on the map.
+- **Taluks:** the 8 official taluks are used: Puducherry, Ozhukarai, Villianur and Bahour; Karaikal and Thirunallar; Mahe; Yanam.
+- **Region outlines:** built by merging each region's taluks. The ADM2 district layer is not used, because it puts Thirunallar inside its "Puducherry" district.
+- **Checks:** every representative point lies inside its region.
+- **Shared grid cells:** each taluk records which other taluks share its region's grid cell, since all of them use the region's forecast and NASA values.
+- **Known gap:** the source outline for Yanam covers about 13 km², against an officially cited 30 km². This affects the map only, not the predictions.
+
 ### Module 2: Historical Data Collection – NASA POWER
 
 **Purpose:** Retrieve historical daily solar-radiation reference data.
@@ -466,6 +474,12 @@ Periodic retraining (§17) means running `scripts/collect_data.py`, then `script
 - show data-source, update-time and spatial-resolution disclaimers.
 
 **Output:** Interactive web application and regional dashboard.
+
+**Implementation:** `src/dashboard/app.py` (Streamlit, with a Leaflet map through `streamlit-folium` and Plotly charts). Run it with `.venv/Scripts/streamlit run src/dashboard/app.py`.
+- **Map:** an overview with labelled markers for the four regions, coloured by tomorrow's category. Clicking a marker or using the dropdown opens a region view that shows its taluks, and those can be clicked too.
+- **Forecast cards:** three day cards, each with the ML estimate, its category, and the raw ECMWF forecast. When a taluk is selected, a note explains that all taluks of a region share its values.
+- **Tabs:** region comparison, historical patterns, forecast accuracy on the test year (by lead time and by region), and data sources with disclaimers.
+- **Failures:** if the API fails, the dashboard shows an error instead of out-of-date values. Warnings from the engine, such as stale runs or unusual inputs, are displayed.
 
 ### Module 9: Rooftop Solar-Energy Estimator
 
