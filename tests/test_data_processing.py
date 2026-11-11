@@ -66,3 +66,47 @@ def test_leads_kept_separate():
     daily = aggregate_daily(pd.concat([a, b]), "+00:00").set_index("lead_days")
     assert daily.loc[1, "forecast_precipitation_sum"] == pytest.approx(24.0)
     assert daily.loc[3, "forecast_precipitation_sum"] == pytest.approx(48.0)
+
+
+# ---------------------------------------------------------------- preprocessing
+from src.preprocessing.build_training_data import (  # noqa: E402
+    assign_split, build_climatology, seasonal_features)
+from src.preprocessing.clean_data import FORECAST_FEATURES, clean_forecasts  # noqa: E402
+
+SPLITS = {"train": ["2024-01-01", "2024-06-30"], "validation": ["2024-07-01", "2024-09-30"],
+          "test": ["2024-10-01", "2024-12-31"]}
+
+
+def test_all_leads_of_a_date_share_a_split():
+    dates = pd.Series(pd.to_datetime(["2024-06-30"] * 3 + ["2024-07-01"] * 3 + ["2025-01-05"]))
+    s = assign_split(dates, SPLITS)
+    assert list(s[:3]) == ["train"] * 3 and list(s[3:6]) == ["validation"] * 3
+    assert pd.isna(s.iloc[6])
+
+
+def test_climatology_uses_only_requested_years_and_wraps():
+    dates = pd.date_range("2022-01-01", "2024-12-31", freq="D")
+    nasa = pd.DataFrame({"date": dates, "region_id": "r",
+                         "ALLSKY_SFC_SW_DWN": np.where(dates.year == 2024, 100.0, 5.0),
+                         "CLRSKY_SFC_SW_DWN": 6.0})
+    clim = build_climatology(nasa, 2022, 2023, window=15)
+    assert len(clim) == 365
+    assert clim["climatology_solar_radiation"].max() == pytest.approx(5.0)  # 2024 excluded
+    assert clim["n_years"].min() == 2
+
+
+def test_seasonal_features_are_cyclic():
+    f = seasonal_features(pd.Series(pd.to_datetime(["2025-12-31", "2026-01-01"])))
+    assert abs(f["doy_sin"].iloc[0] - f["doy_sin"].iloc[1]) < 0.05
+
+
+def test_clean_forecasts_clips_and_drops_incomplete():
+    row = {c: 1.0 for c in FORECAST_FEATURES}
+    df = pd.DataFrame([dict(row, forecast_precipitation_sum=-0.3, hours_complete=24),
+                       dict(row, forecast_cloud_cover_mean=np.nan, hours_complete=23)])
+    df["region_id"], df["lead_days"] = "r", 1
+    df["target_date"] = pd.to_datetime(["2025-01-01", "2025-01-02"])
+    out, rep = clean_forecasts(df)
+    assert len(out) == 1 and out["forecast_precipitation_sum"].iloc[0] == 0.0
+    assert rep["values_clipped"]["forecast_precipitation_sum"] == 1
+    assert rep["incomplete_rows_dropped"] == 1

@@ -1,9 +1,19 @@
 {
   "_note": "Pipeline decisions; see results/archive_audit/AUDIT_REPORT.md for the evidence behind them.",
   "forecast_model": "ecmwf_ifs025",
-  "forecast_variables": ["shortwave_radiation", "cloud_cover", "temperature_2m",
-                         "relative_humidity_2m", "precipitation", "wind_speed_10m"],
-  "lead_days": [1, 2, 3],
+  "forecast_variables": [
+    "shortwave_radiation",
+    "cloud_cover",
+    "temperature_2m",
+    "relative_humidity_2m",
+    "precipitation",
+    "wind_speed_10m"
+  ],
+  "lead_days": [
+    1,
+    2,
+    3
+  ],
   "archive_start": "2024-03-01",
   "local_day": {
     "utc_offset": "+05:30",
@@ -13,7 +23,36 @@
     "time_standard": "LST",
     "community": "RE",
     "history_start": "2001-01-01",
-    "parameters": ["ALLSKY_SFC_SW_DWN", "CLRSKY_SFC_SW_DWN", "T2M", "T2M_MAX", "T2M_MIN",
-                   "RH2M", "PRECTOTCORR", "WS10M"]
+    "parameters": [
+      "ALLSKY_SFC_SW_DWN",
+      "CLRSKY_SFC_SW_DWN",
+      "T2M",
+      "T2M_MAX",
+      "T2M_MIN",
+      "RH2M",
+      "PRECTOTCORR",
+      "WS10M"
+    ]
+  },
+  "splits": {
+    "_note": "Chronological, by target_date (all lead rows of a date share a split). Test = last 12 months of NASA labels so both monsoons are held out. Proposed in results/archive_audit/AUDIT_REPORT.md.",
+    "train": [
+      "2024-03-01",
+      "2025-05-03"
+    ],
+    "validation": [
+      "2025-05-04",
+      "2025-11-03"
+    ],
+    "test": [
+      "2025-11-04",
+      "2026-11-03"
+    ]
+  },
+  "climatology": {
+    "_note": "Region x day-of-year NASA means from years strictly before the training period; circular +/- window smoothing.",
+    "start_year": 2001,
+    "end_year": 2023,
+    "smoothing_window_days": 15
   }
 }

@@ -1,0 +1,120 @@
+{
+  "nasa_cleaning": {
+    "rows_in": 37752,
+    "duplicates_dropped": 0,
+    "invalid_target_dropped": 0,
+    "rows_out": 37752
+  },
+  "forecast_cleaning": {
+    "rows_in": 11808,
+    "values_clipped": {
+      "forecast_shortwave_radiation": 0,
+      "forecast_humidity_mean": 0,
+      "forecast_cloud_cover_mean": 0,
+      "forecast_precipitation_sum": 1,
+      "forecast_wind_speed_mean": 0
+    },
+    "duplicates_dropped": 0,
+    "incomplete_rows_dropped": 160,
+    "incomplete_dates": [
+      "2024-03-02",
+      "2024-03-03",
+      "2024-03-04",
+      "2024-03-05",
+      "2024-03-06",
+      "2024-03-07",
+      "2024-03-08",
+      "2024-03-09",
+      "2026-04-17",
+      "2026-04-18",
+      "2026-04-19",
+      "2026-04-20",
+      "2026-04-21",
+      "2026-04-22",
+      "2026-04-23"
+    ],
+    "rows_out": 11648
+  },
+  "grid_cells": [
+    {
+      "region_id": "puducherry",
+      "latitude": 11.93,
+      "longitude": 79.8,
+      "nasa_solar_cell": "11\u00b0N 79\u00b0E",
+      "openmeteo_lat": 12.0,
+      "openmeteo_lon": 79.75
+    },
+    {
+      "region_id": "karaikal",
+      "latitude": 10.92,
+      "longitude": 79.82,
+      "nasa_solar_cell": "10\u00b0N 79\u00b0E",
+      "openmeteo_lat": 11.0,
+      "openmeteo_lon": 79.75
+    },
+    {
+      "region_id": "mahe",
+      "latitude": 11.7,
+      "longitude": 75.54,
+      "nasa_solar_cell": "11\u00b0N 75\u00b0E",
+      "openmeteo_lat": 11.75,
+      "openmeteo_lon": 75.5
+    },
+    {
+      "region_id": "yanam",
+      "latitude": 16.73,
+      "longitude": 82.21,
+      "nasa_solar_cell": "16\u00b0N 82\u00b0E",
+      "openmeteo_lat": 16.75,
+      "openmeteo_lon": 82.25
+    }
+  ],
+  "climatology": {
+    "years": [
+      2001,
+      2023
+    ],
+    "smoothing_window_days": 15
+  },
+  "training_table": {
+    "rows": 11564,
+    "features": [
+      "forecast_shortwave_radiation",
+      "forecast_temperature_mean",
+      "forecast_temperature_max",
+      "forecast_temperature_min",
+      "forecast_humidity_mean",
+      "forecast_cloud_cover_mean",
+      "forecast_precipitation_sum",
+      "forecast_wind_speed_mean",
+      "lead_days",
+      "doy_sin",
+      "doy_cos",
+      "climatology_solar_radiation",
+      "clear_sky_radiation",
+      "region_id"
+    ],
+    "target": "actual_solar_radiation",
+    "residual_target": "target_residual",
+    "splits": {
+      "train": {
+        "from": "2024-03-07",
+        "to": "2025-05-03",
+        "rows": 5060,
+        "dates": 423
+      },
+      "validation": {
+        "from": "2025-05-04",
+        "to": "2025-11-03",
+        "rows": 2208,
+        "dates": 184
+      },
+      "test": {
+        "from": "2025-11-04",
+        "to": "2026-11-03",
+        "rows": 4296,
+        "dates": 358
+      }
+    }
+  }
+}

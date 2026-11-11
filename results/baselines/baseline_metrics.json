@@ -1,0 +1,44 @@
+{
+  "train": {
+    "raw_forecast": {
+      "mae": 0.6266,
+      "rmse": 0.8945,
+      "r2": 0.6102,
+      "bias": 0.2634
+    },
+    "climatology": {
+      "mae": 0.7698,
+      "rmse": 1.0705,
+      "r2": 0.4418,
+      "bias": 0.1663
+    }
+  },
+  "validation": {
+    "raw_forecast": {
+      "mae": 0.785,
+      "rmse": 1.0608,
+      "r2": 0.4498,
+      "bias": 0.3238
+    },
+    "climatology": {
+      "mae": 1.0381,
+      "rmse": 1.3362,
+      "r2": 0.1269,
+      "bias": 0.2903
+    }
+  },
+  "test": {
+    "raw_forecast": {
+      "mae": 0.7112,
+      "rmse": 0.9903,
+      "r2": 0.4422,
+      "bias": 0.4509
+    },
+    "climatology": {
+      "mae": 0.7734,
+      "rmse": 1.0641,
+      "r2": 0.356,
+      "bias": 0.0821
+    }
+  }
+}

@@ -506,10 +506,9 @@ solar-prediction-puducherry/
 │       └── administrative_subdivisions.geojson
 │
 ├── notebooks/
-│   ├── 01_data_collection_audit.ipynb
-│   ├── 02_eda.ipynb
-│   ├── 03_preprocessing.ipynb
-│   └── 04_model_experiments.ipynb
+│   ├── 02_preprocessing.ipynb        (Module 4; archive audit is scripts/audit_archive_coverage.py)
+│   ├── 03_eda_baselines.ipynb        (Module 5)
+│   └── 04_model_experiments.ipynb    (Module 6)
 │
 ├── src/
 │   ├── data_collection/
