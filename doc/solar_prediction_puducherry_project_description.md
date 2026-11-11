@@ -499,6 +499,13 @@ The performance ratio is an assumed factor representing system losses and should
 
 **Output:** Rooftop daily-energy estimate integrated into the dashboard.
 
+**Implementation:** the calculation is `src/services/rooftop.py`, and the calculator appears in the dashboard's region view, below the three day cards. Settings are in the `rooftop` section of `config/pipeline.json`.
+- **Formula:** kWp ratings are defined at 1 kW/m² of sunlight, so daily radiation in kWh/m²/day equals peak sun hours. The estimate is therefore the ML radiation estimate × capacity × performance ratio.
+- **Inputs:** capacity defaults to 3 kW (allowed range 0.5–100 kW). The performance ratio defaults to 0.75 on a slider from 0.60 to 0.90, with an explanation of the losses it represents.
+- **Caveats shown with the result:** it is labelled as an indicative estimate, based on horizontal-surface radiation for the region, and not a measurement at the user's roof.
+- **Edge cases:** days without a valid prediction show "—", and invalid inputs are rejected.
+- **Tests:** `tests/test_calculator.py`.
+
 ### Module 10: Testing, Documentation and Deployment
 
 **Purpose:** Verify the complete application and prepare it for demonstration.

@@ -23,6 +23,7 @@ from src.geospatial.map_data import (CATEGORY_COLOR, CATEGORY_LABEL, build_map, 
 from src.models.predict import SolarPredictor  # noqa: E402
 from src.services import live_forecast  # noqa: E402
 from src.services.live_forecast import LiveForecastError  # noqa: E402
+from src.services.rooftop import estimate_daily_energy  # noqa: E402
 from src.viz import GRID, INK, INK_2, NEUTRAL, REGION_COLOR, REGION_LABEL, REGION_ORDER, SURFACE  # noqa: E402
 
 IST = timezone(timedelta(hours=5, minutes=30))
@@ -194,6 +195,34 @@ with col_panel:
         t = regions[rid]
         st.caption(f"Representative point {t['representative_lat']:.2f}°N, {t['representative_lon']:.2f}°E · "
                    f"NASA cell {t['nasa_solar_cell']} · taluks: {', '.join(t['taluks'])}")
+
+        # ---------------------------------------------------------- Module 9
+        rcfg = cfg["rooftop"]
+        with st.container(border=True):
+            st.markdown("#### 🏠 Rooftop energy estimate")
+            c1, c2 = st.columns(2)
+            capacity = c1.number_input(
+                "System capacity (kW)", min_value=rcfg["min_capacity_kw"], max_value=rcfg["max_capacity_kw"],
+                value=ss.get("capacity_store", rcfg["default_capacity_kw"]), step=0.5, key="capacity_kw",
+                help="The panels' rated (peak) capacity in kWp, e.g. 3 kW for a typical home system.")
+            pr = c2.slider(
+                "Performance ratio", min_value=rcfg["min_performance_ratio"], max_value=rcfg["max_performance_ratio"],
+                value=ss.get("pr_store", rcfg["default_performance_ratio"]), step=0.01, key="performance_ratio",
+                help="Share of the ideal output left after real-world losses (heat, wiring, inverter, dust, minor "
+                     f"shading). {rcfg['default_performance_ratio']:.2f} is a typical assumption for rooftop systems; "
+                     "use a lower value for older, dusty or partly shaded installations.")
+            # keep the inputs when the widgets are not drawn (overview), which clears widget state
+            ss.capacity_store, ss.pr_store = capacity, pr
+            ecols = st.columns(len(rows))
+            for col, (_, r) in zip(ecols, rows.iterrows()):
+                energy = estimate_daily_energy(r["ml_prediction"] if pd.notna(r["ml_prediction"]) else None,
+                                               capacity, pr, rcfg)
+                col.metric(f"{pd.Timestamp(r['target_date']):%a %d %b} · kWh",
+                           "—" if energy is None else f"{energy:.1f}")
+            st.caption(f"Approximate kWh per day = solar radiation × {capacity:g} kW × {pr:.2f}. An **indicative estimate**, "
+                       "not a guaranteed amount: actual output also depends on panel tilt and orientation, shading, "
+                       "temperature, inverter and installation. Uses horizontal-surface radiation for the region, "
+                       "not a measurement at your roof.")
 
 if not error and meta:
     st.caption(f"Forecast model **{meta['forecast_model']}**, run initialised {fmt_ist(meta['run_initialisation_utc'])} · "

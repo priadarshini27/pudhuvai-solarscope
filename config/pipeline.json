@@ -77,5 +77,14 @@
     "_note": "Project-defined rule, not an official classification: terciles of NASA daily ALLSKY_SFC_SW_DWN 2001-2023 pooled over the four regions (4.95 / 6.00 kWh/m2/day), rounded.",
     "low_below": 5.0,
     "high_from": 6.0
+  },
+  "rooftop": {
+    "_note": "Module 9 indicative estimator: energy (kWh/day) = radiation (kWh/m2/day) x capacity (kWp) x performance ratio. Assumptions, not measurements.",
+    "default_capacity_kw": 3.0,
+    "min_capacity_kw": 0.5,
+    "max_capacity_kw": 100.0,
+    "default_performance_ratio": 0.75,
+    "min_performance_ratio": 0.6,
+    "max_performance_ratio": 0.9
   }
 }
