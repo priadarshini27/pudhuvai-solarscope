@@ -1,0 +1,100 @@
+{
+  "retrieved_utc": "2026-11-11T09:17:13.789273+00:00",
+  "nasa_power": {
+    "endpoint": "https://power.larc.nasa.gov/api/temporal/daily/point",
+    "time_standard": "LST",
+    "community": "RE",
+    "parameters": [
+      "ALLSKY_SFC_SW_DWN",
+      "CLRSKY_SFC_SW_DWN",
+      "T2M",
+      "T2M_MAX",
+      "T2M_MIN",
+      "RH2M",
+      "PRECTOTCORR",
+      "WS10M"
+    ],
+    "date_range": [
+      "2001-01-01",
+      "2026-11-03"
+    ],
+    "rows": 37752,
+    "missing_target_rows": 0
+  },
+  "open_meteo": {
+    "endpoint": "https://previous-runs-api.open-meteo.com/v1/forecast",
+    "model": "ecmwf_ifs025",
+    "variables": [
+      "shortwave_radiation",
+      "cloud_cover",
+      "temperature_2m",
+      "relative_humidity_2m",
+      "precipitation",
+      "wind_speed_10m"
+    ],
+    "lead_days": [
+      1,
+      2,
+      3
+    ],
+    "lead_definition": "hourly value predicted N x 24 h before valid time (_previous_dayN); daily aggregate over IST day",
+    "local_utc_offset": "+05:30",
+    "date_range": [
+      "2024-03-02",
+      "2026-11-10"
+    ],
+    "rows": 11808,
+    "complete_rows": 11648,
+    "incomplete_target_dates": [
+      "2024-03-02",
+      "2024-03-03",
+      "2024-03-04",
+      "2024-03-05",
+      "2024-03-06",
+      "2024-03-07",
+      "2024-03-08",
+      "2024-03-09",
+      "2026-04-17",
+      "2026-04-18",
+      "2026-04-19",
+      "2026-04-20",
+      "2026-04-21",
+      "2026-04-22",
+      "2026-04-23"
+    ],
+    "grid_cells": [
+      {
+        "region_id": "puducherry",
+        "requested_lat": 11.93,
+        "requested_lon": 79.8,
+        "grid_lat": 12.0,
+        "grid_lon": 79.75,
+        "elevation": 10.0
+      },
+      {
+        "region_id": "karaikal",
+        "requested_lat": 10.92,
+        "requested_lon": 79.82,
+        "grid_lat": 11.0,
+        "grid_lon": 79.75,
+        "elevation": 4.0
+      },
+      {
+        "region_id": "mahe",
+        "requested_lat": 11.7,
+        "requested_lon": 75.54,
+        "grid_lat": 11.75,
+        "grid_lon": 75.5,
+        "elevation": 11.0
+      },
+      {
+        "region_id": "yanam",
+        "requested_lat": 16.73,
+        "requested_lon": 82.21,
+        "grid_lat": 16.75,
+        "grid_lon": 82.25,
+        "elevation": 9.0
+      }
+    ]
+  }
+}

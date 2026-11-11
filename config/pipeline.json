@@ -1,0 +1,19 @@
+{
+  "_note": "Pipeline decisions; see results/archive_audit/AUDIT_REPORT.md for the evidence behind them.",
+  "forecast_model": "ecmwf_ifs025",
+  "forecast_variables": ["shortwave_radiation", "cloud_cover", "temperature_2m",
+                         "relative_humidity_2m", "precipitation", "wind_speed_10m"],
+  "lead_days": [1, 2, 3],
+  "archive_start": "2024-03-01",
+  "local_day": {
+    "utc_offset": "+05:30",
+    "_note": "Forecast hours are fetched in UTC and grouped into IST calendar days. NASA POWER is requested with time-standard=LST (local solar time). Both day boundaries fall at night, so daily radiation totals are equivalent (audit: mean |LST-UTC| <= 0.001 kWh/m2/day)."
+  },
+  "nasa": {
+    "time_standard": "LST",
+    "community": "RE",
+    "history_start": "2001-01-01",
+    "parameters": ["ALLSKY_SFC_SW_DWN", "CLRSKY_SFC_SW_DWN", "T2M", "T2M_MAX", "T2M_MIN",
+                   "RH2M", "PRECTOTCORR", "WS10M"]
+  }
+}

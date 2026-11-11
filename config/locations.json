@@ -1,0 +1,13 @@
+{
+  "_note": "Representative points per region. Chosen slightly inland of the town centre so they do not fall in ocean-dominated grid cells. Grid cells actually used by each API are recorded in the audit output.",
+  "regions": [
+    {"region_id": "puducherry", "name": "Puducherry", "latitude": 11.93, "longitude": 79.80,
+     "note": "Puducherry town, ~2 km inland of the Coromandel coast"},
+    {"region_id": "karaikal", "name": "Karaikal", "latitude": 10.92, "longitude": 79.82,
+     "note": "Karaikal town, slightly inland; Cauvery delta"},
+    {"region_id": "mahe", "name": "Mahe", "latitude": 11.70, "longitude": 75.54,
+     "note": "Mahe enclave (~9 km2) on the Malabar coast; point placed on its inland side"},
+    {"region_id": "yanam", "name": "Yanam", "latitude": 16.73, "longitude": 82.21,
+     "note": "Yanam, Godavari delta, on the river bank"}
+  ]
+}
