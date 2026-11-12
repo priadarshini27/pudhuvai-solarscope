@@ -1,9 +1,9 @@
 """Shared matplotlib style for notebooks and reports.
 
-Region colours are fixed per entity (never by rank) and validated for colour-
-vision deficiency (dataviz validator: CVD worst adjacent dE 9.1, light mode).
-Two slots are < 3:1 against the surface, so charts always carry a legend and/or
-direct labels, and notebooks print the underlying table.
+Solar palette: #773701 umber, #F49005 sun orange, #FBB946 gold, #C1ADBC haze,
+on warm cream neutrals. Region colours are fixed per entity (never by rank).
+Gold and haze are < 3:1 against the surface, so charts always carry a legend
+and/or direct labels, and notebooks print the underlying table.
 """
 from __future__ import annotations
 
@@ -11,9 +11,10 @@ import matplotlib as mpl
 
 REGION_ORDER = ["puducherry", "karaikal", "mahe", "yanam"]
 REGION_LABEL = {"puducherry": "Puducherry", "karaikal": "Karaikal", "mahe": "Mahe", "yanam": "Yanam"}
-REGION_COLOR = {"puducherry": "#2a78d6", "karaikal": "#eb6834", "mahe": "#1baf7a", "yanam": "#eda100"}
-NEUTRAL = "#898781"
-INK, INK_2, GRID, AXIS, SURFACE = "#0b0b0b", "#52514e", "#e1e0d9", "#c3c2b7", "#fcfcfb"
+UMBER, SUN, GOLD, HAZE = "#773701", "#F49005", "#FBB946", "#C1ADBC"
+REGION_COLOR = {"puducherry": UMBER, "karaikal": SUN, "mahe": HAZE, "yanam": GOLD}
+NEUTRAL = "#8C7B6B"
+INK, INK_2, GRID, AXIS, SURFACE = "#2B1A0B", "#5C4632", "#F0E4D4", "#D9C7B2", "#FFFAF3"
 
 
 def set_style():

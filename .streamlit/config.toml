@@ -1,9 +1,12 @@
 [theme]
+# Solar palette: #773701 (umber) · #F49005 (sun orange) · #FBB946 (gold) · #C1ADBC (haze)
 base = "light"
-primaryColor = "#2a78d6"
-backgroundColor = "#fcfcfb"
-secondaryBackgroundColor = "#f3f2ee"
-textColor = "#0b0b0b"
+primaryColor = "#F49005"
+backgroundColor = "#FFFAF3"
+secondaryBackgroundColor = "#FDF1DE"
+textColor = "#2B1A0B"
+linkColor = "#773701"
+borderColor = "#EAD9C4"
 
 [browser]
 gatherUsageStats = false

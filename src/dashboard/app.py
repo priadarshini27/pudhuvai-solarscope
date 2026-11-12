@@ -24,7 +24,7 @@ from src.models.predict import SolarPredictor  # noqa: E402
 from src.services import live_forecast  # noqa: E402
 from src.services.live_forecast import LiveForecastError  # noqa: E402
 from src.services.rooftop import estimate_daily_energy  # noqa: E402
-from src.viz import GRID, INK, INK_2, NEUTRAL, REGION_COLOR, REGION_LABEL, REGION_ORDER, SURFACE  # noqa: E402
+from src.viz import AXIS, GOLD, GRID, INK, INK_2, NEUTRAL, REGION_COLOR, REGION_LABEL, REGION_ORDER, SURFACE  # noqa: E402
 
 IST = timezone(timedelta(hours=5, minutes=30))
 CATEGORY_ICON = {"low": "☁️", "moderate": "⛅", "high": "☀️", None: "⚠️"}
@@ -59,8 +59,8 @@ def style_fig(fig: go.Figure, height: int = 340, ytitle: str = UNIT) -> go.Figur
                       plot_bgcolor=SURFACE, font=dict(color=INK_2, size=12),
                       title=dict(font=dict(color=INK, size=14), y=0.98, yanchor="top", x=0.01),
                       legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0, title=None),
-                      hoverlabel=dict(bgcolor="white"), yaxis_title=ytitle)
-    fig.update_xaxes(showgrid=False, linecolor="#c3c2b7")
+                      hoverlabel=dict(bgcolor="white", bordercolor=AXIS), yaxis_title=ytitle)
+    fig.update_xaxes(showgrid=False, linecolor=AXIS)
     fig.update_yaxes(gridcolor=GRID, zeroline=False)
     return fig
 
@@ -100,6 +100,8 @@ tomorrow_vals = tomorrow["ml_prediction"].dropna().to_dict() if len(tomorrow) el
 head_l, head_r = st.columns([4, 1])
 with head_l:
     st.title("☀️ Pudhuvai SolarScope")
+    st.markdown('<div style="height:4px;width:96px;border-radius:2px;margin:-0.6rem 0 0.6rem;'
+                'background:linear-gradient(90deg,#773701,#F49005,#FBB946)"></div>', unsafe_allow_html=True)
     st.caption("Three-day solar-radiation outlook for the four regions of the Union Territory of "
                "Puducherry: an ML-corrected weather forecast, for education and decision support.")
 with head_r:
@@ -196,33 +198,38 @@ with col_panel:
         st.caption(f"Representative point {t['representative_lat']:.2f}°N, {t['representative_lon']:.2f}°E · "
                    f"NASA cell {t['nasa_solar_cell']} · taluks: {', '.join(t['taluks'])}")
 
-        # ---------------------------------------------------------- Module 9
-        rcfg = cfg["rooftop"]
-        with st.container(border=True):
-            st.markdown("#### 🏠 Rooftop energy estimate")
-            c1, c2 = st.columns(2)
-            capacity = c1.number_input(
+# ------------------------------------------------------------------ Module 9 (full width, below map + panel)
+if not error and sel_region is not None:
+    rcfg = cfg["rooftop"]
+    with st.container(border=True):
+        st.markdown("#### 🏠 Rooftop energy estimate")
+        c_in, c_out, c_note = st.columns([1.3, 1, 1.7], gap="large")
+        with c_in:
+            capacity = st.number_input(
                 "System capacity (kW)", min_value=rcfg["min_capacity_kw"], max_value=rcfg["max_capacity_kw"],
                 value=ss.get("capacity_store", rcfg["default_capacity_kw"]), step=0.5, key="capacity_kw",
                 help="The panels' rated (peak) capacity in kWp, e.g. 3 kW for a typical home system.")
-            pr = c2.slider(
+            pr = st.slider(
                 "Performance ratio", min_value=rcfg["min_performance_ratio"], max_value=rcfg["max_performance_ratio"],
                 value=ss.get("pr_store", rcfg["default_performance_ratio"]), step=0.01, key="performance_ratio",
                 help="Share of the ideal output left after real-world losses (heat, wiring, inverter, dust, minor "
                      f"shading). {rcfg['default_performance_ratio']:.2f} is a typical assumption for rooftop systems; "
                      "use a lower value for older, dusty or partly shaded installations.")
-            # keep the inputs when the widgets are not drawn (overview), which clears widget state
-            ss.capacity_store, ss.pr_store = capacity, pr
-            ecols = st.columns(len(rows))
-            for col, (_, r) in zip(ecols, rows.iterrows()):
+        # keep the inputs when the widgets are not drawn (overview), which clears widget state
+        ss.capacity_store, ss.pr_store = capacity, pr
+        with c_out:
+            st.markdown("**Estimated output**")
+            for _, r in rows.iterrows():
                 energy = estimate_daily_energy(r["ml_prediction"] if pd.notna(r["ml_prediction"]) else None,
                                                capacity, pr, rcfg)
-                col.metric(f"{pd.Timestamp(r['target_date']):%a %d %b} · kWh",
-                           "—" if energy is None else f"{energy:.1f}")
-            st.caption(f"Approximate kWh per day = solar radiation × {capacity:g} kW × {pr:.2f}. An **indicative estimate**, "
-                       "not a guaranteed amount: actual output also depends on panel tilt and orientation, shading, "
-                       "temperature, inverter and installation. Uses horizontal-surface radiation for the region, "
-                       "not a measurement at your roof.")
+                d, v = st.columns([3, 2])
+                d.markdown(f"{pd.Timestamp(r['target_date']):%a %d %b}")
+                v.markdown("—" if energy is None else f"**{energy:.1f}** kWh")
+        with c_note:
+            st.markdown(f"**How it's calculated**  \nkWh per day = solar radiation × {capacity:g} kW × {pr:.2f}")
+            st.caption("An **indicative estimate**, not a guaranteed amount: actual output also depends on panel "
+                       "tilt and orientation, shading, temperature, inverter and installation. Uses "
+                       "horizontal-surface radiation for the region, not a measurement at your roof.")
 
 if not error and meta:
     st.caption(f"Forecast model **{meta['forecast_model']}**, run initialised {fmt_ist(meta['run_initialisation_utc'])} · "
@@ -282,7 +289,7 @@ with tab_hist:
     clim = clim[clim["region_id"] == rid].set_index("doy")["climatology_solar_radiation"]
     fig = go.Figure()
     fig.add_scatter(x=recent["date"], y=recent["ALLSKY_SFC_SW_DWN"], name="Daily value", mode="lines",
-                    line=dict(color="#86b6ef", width=1), hovertemplate="%{x|%d %b %Y}: %{y:.2f}<extra></extra>")
+                    line=dict(color=GOLD, width=1), hovertemplate="%{x|%d %b %Y}: %{y:.2f}<extra></extra>")
     fig.add_scatter(x=recent["date"], y=recent["ALLSKY_SFC_SW_DWN"].rolling(30, center=True, min_periods=10).mean(),
                     name="30-day average", mode="lines", line=dict(color=REGION_COLOR["puducherry"], width=2.5),
                     hovertemplate="%{x|%d %b %Y}: %{y:.2f}<extra>30-day average</extra>")

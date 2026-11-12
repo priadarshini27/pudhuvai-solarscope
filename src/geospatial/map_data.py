@@ -10,10 +10,10 @@ import folium
 ROOT = Path(__file__).resolve().parents[2]
 GEO = ROOT / "data" / "geo"
 
-# sequential (one hue, light -> dark) for the ordinal low/moderate/high category
-CATEGORY_COLOR = {"low": "#9ec5f4", "moderate": "#3987e5", "high": "#184f95", None: "#c3c2b7"}
+# ordinal low/moderate/high: cloud haze -> gold -> full-sun orange
+CATEGORY_COLOR = {"low": "#C1ADBC", "moderate": "#FBB946", "high": "#F49005", None: "#D9C7B2"}
 CATEGORY_LABEL = {"low": "Low", "moderate": "Moderate", "high": "High", None: "Unavailable"}
-OUTLINE, MUTED = "#52514e", "#898781"
+OUTLINE, MUTED = "#773701", "#8C7B6B"
 
 
 @lru_cache(maxsize=None)
@@ -74,7 +74,7 @@ def build_map(selected_region: str | None, categories: dict[str, str | None],
             {"type": "FeatureCollection", "features": feats}, name="Taluks",
             style_function=lambda f: (
                 {"fillColor": CATEGORY_COLOR[categories.get(selected_region)], "fillOpacity": 0.8,
-                 "color": "#0b0b0b", "weight": 3}
+                 "color": "#2B1A0B", "weight": 3}
                 if f["properties"]["subdivision_id"] == selected_taluk else
                 {"fillColor": CATEGORY_COLOR[categories.get(selected_region)],
                  "fillOpacity": 0.15 if selected_taluk else 0.45, "color": OUTLINE, "weight": 1, "dashArray": "4 3"}),
@@ -92,12 +92,12 @@ def build_map(selected_region: str | None, categories: dict[str, str | None],
             label = f"{p['region_name']}: {val:.1f}" if val is not None else p["region_name"]
             folium.CircleMarker(
                 location=[p["representative_lat"], p["representative_lon"]], radius=11,
-                color="#fcfcfb", weight=2, fill=True, fill_color=CATEGORY_COLOR[categories.get(rid)], fill_opacity=0.95,
+                color="#FFFAF3", weight=2, fill=True, fill_color=CATEGORY_COLOR[categories.get(rid)], fill_opacity=0.95,
                 tooltip=f"{label} kWh/m²/day tomorrow ({CATEGORY_LABEL[categories.get(rid)]}) – click to open",
             ).add_to(m)
             folium.map.Marker(
                 [p["representative_lat"], p["representative_lon"]],
-                icon=folium.DivIcon(html=f'<div style="font:600 12px sans-serif;color:#0b0b0b;white-space:nowrap;'
+                icon=folium.DivIcon(html=f'<div style="font:600 12px sans-serif;color:#2B1A0B;white-space:nowrap;'
                                          f'transform:translate(14px,-8px);text-shadow:0 0 3px #fff,0 0 3px #fff">{label}</div>'),
             ).add_to(m)
         m.fit_bounds(_bounds(regions), padding=(40, 40))
