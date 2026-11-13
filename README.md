@@ -68,11 +68,11 @@ Each step writes outputs that the next step reads. Raw API responses are cached 
 | 4. EDA and baselines (Module 5) | run `notebooks/03_eda_baselines.ipynb` | `results/eda/`, `results/baselines/` |
 | 5. Model experiments (Module 6) | run `notebooks/04_model_experiments.ipynb` | `models/evaluated/`, `results/models/`, `results/metrics.json` |
 | 6. Deployed model | `python scripts/retrain_production.py` | `models/solar_model.joblib`, `model_metadata.json` |
-| 7. Map layers (Module 1) | `python scripts/prepare_geo.py` | `data/geo/*.geojson` |
+| 7. Map layers (Module 1) | `python scripts/prepare_geo.py --fetch` | `data/geo/*.geojson` |
 
 To run a notebook from the command line: `.\.venv\Scripts\python -m jupyter nbconvert --to notebook --execute --inplace notebooks/02_preprocessing.ipynb`
 
-Step 7 needs the geoBoundaries ADM3 file in `data/raw/geo/`. The script prints the download URL if it is missing.
+Step 7 needs the geoBoundaries ADM3 file in `data/raw/geo/` (the script prints the download URL if it is missing). `--fetch` downloads the OpenStreetMap boundary relations into the same folder; leave it out to reuse the saved copy.
 
 **Periodic retraining:** run step 2 and then step 6. This refits the chosen configuration on all labelled data, including newly published NASA days. The dashboard warns when the deployed model's training data is more than 120 days old.
 
@@ -128,7 +128,7 @@ The [technical report](doc/technical_report.md) explains each of these.
 
 - **NASA POWER:** daily `ALLSKY_SFC_SW_DWN` and related variables. NASA Langley Research Center (LaRC) POWER Project, funded through the NASA Earth Science/Applied Science Program.
 - **Open-Meteo:** Previous Runs API and Forecast API, ECMWF IFS 0.25° model. Data licensed under CC BY 4.0. The free API is for **non-commercial** use; check [Open-Meteo's terms](https://open-meteo.com/en/terms) before any public or commercial deployment.
-- **Boundaries:** [geoBoundaries](https://www.geoboundaries.org/) gbOpen IND ADM3, from the Local Government Directory via Pathways Data Pvt. Ltd. Licensed ODbL 1.0; the derived files in `data/geo/` are also ODbL 1.0.
+- **Boundaries:** © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors (taluk and district relations, the same boundaries the base map draws). The Karaikal/Thirunallar split comes from [geoBoundaries](https://www.geoboundaries.org/) gbOpen IND ADM3 (Local Government Directory via Pathways Data Pvt. Ltd.). Both are ODbL 1.0; the derived files in `data/geo/` are also ODbL 1.0.
 - **Base map:** © OpenStreetMap contributors.
 
 ## Limitations

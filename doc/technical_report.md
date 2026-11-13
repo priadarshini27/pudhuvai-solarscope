@@ -77,7 +77,7 @@ No two regions share a NASA cell, and no two regions ever have identical daily N
 | Labels and climatology | NASA POWER Daily Point API | `ALLSKY_SFC_SW_DWN`, plus `CLRSKY_SFC_SW_DWN`, temperature, humidity, precipitation and wind; 2001-01-01 to 2026-11-03; **LST** time standard |
 | Training inputs | Open-Meteo Previous Runs API | `ecmwf_ifs025`; hourly shortwave radiation, cloud cover, temperature, humidity, precipitation and wind; `_previous_day1..3`; March 2024 to November 2026 |
 | Live inputs | Open-Meteo Forecast API | same model, variables and UTC hours as the training inputs |
-| Boundaries | geoBoundaries gbOpen IND ADM3 | the 8 official taluks, from the Local Government Directory; ODbL 1.0 |
+| Boundaries | OpenStreetMap + geoBoundaries gbOpen IND ADM3 | the 8 official taluks; OSM outlines, Karaikal split from geoBoundaries; ODbL 1.0 |
 
 ## 3. Data audit
 
@@ -367,7 +367,7 @@ The dashboard is built with Streamlit, a Leaflet map (via folium) and Plotly cha
 - **Forecast panel:** three day cards, each with the ML estimate, category and raw forecast.
 - **Tabs:** region comparison, historical patterns, test-year accuracy, and data and attribution notes.
 
-**Boundaries.** The 8 taluks come from geoBoundaries ADM3 (Local Government Directory). Region outlines are built by merging taluks, because the district (ADM2) layer wrongly places Thirunallar (Karaikal) inside Puducherry. The source outline for Yanam (about 13 km²) is smaller than the officially cited about 30 km²; this affects the map only.
+**Boundaries.** Six taluks (Puducherry, Ozhukarai, Villianur, Bahour, Mahe, Yanam) are OpenStreetMap relations, the same boundaries the base tiles draw. OSM does not map Karaikal's taluks, so the geoBoundaries ADM3 Karaikal and Thirunallar taluks are clipped to the OSM Karaikal district and the gaps are filled. Region outlines are built by merging taluks, because OSM's 'Puducherry' district relation also contains Mahe and Yanam. The resulting areas (Puducherry 296, Karaikal 161, Mahe 9.1, Yanam 27.9 km²) match the officially cited figures. The earlier geoBoundaries-only layer gave Yanam about 13 km² and was offset by up to 2.5 km elsewhere.
 
 **Rooftop calculator.** Energy = radiation × capacity (kWp) × performance ratio. Defaults are 3 kW and PR 0.75, adjustable from 0.60 to 0.90. Results are labelled as indicative, horizontal-surface estimates.
 
@@ -445,5 +445,6 @@ The resulting system makes honest, clearly labelled three-day estimates availabl
 
 - NASA POWER: NASA Langley Research Center (LaRC) POWER Project, funded through the NASA Earth Science/Applied Science Program.
 - Open-Meteo: weather data under CC BY 4.0 (ECMWF IFS model).
+- OpenStreetMap administrative boundaries: © OpenStreetMap contributors, ODbL 1.0.
 - geoBoundaries gbOpen IND ADM3: Local Government Directory via Pathways Data Pvt. Ltd., ODbL 1.0.
 - Base map: © OpenStreetMap contributors.

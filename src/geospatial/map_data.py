@@ -6,6 +6,7 @@ from functools import lru_cache
 from pathlib import Path
 
 import folium
+from branca.element import MacroElement, Template
 
 ROOT = Path(__file__).resolve().parents[2]
 GEO = ROOT / "data" / "geo"
@@ -45,14 +46,58 @@ def _bounds(features: list[dict]) -> list[list[float]]:
     return [[min(ys), min(xs)], [max(ys), max(xs)]]
 
 
+def legend_html(thresholds: tuple[float, float] | None, show_unavailable: bool) -> str:
+    """Category legend: swatch + label + kWh/m²/day range (when thresholds are given)."""
+    if thresholds:
+        lo, hi = thresholds
+        ranges = {"low": f"&lt; {lo:g}", "moderate": f"{lo:g}–{hi:g}", "high": f"≥ {hi:g}", None: "no forecast"}
+    else:
+        ranges = {k: "" for k in CATEGORY_LABEL}
+    keys = ["high", "moderate", "low"] + ([None] if show_unavailable else [])
+    rows = "".join(
+        f'<div style="display:flex;align-items:center;gap:6px;margin-top:3px">'
+        f'<span style="width:12px;height:12px;border-radius:50%;background:{CATEGORY_COLOR[k]};'
+        f'border:1px solid {OUTLINE};flex:none"></span>'
+        f'<span>{CATEGORY_LABEL[k]}</span>'
+        f'<span style="margin-left:auto;padding-left:8px;color:{MUTED}">{ranges[k]}</span></div>'
+        for k in keys)
+    return (f'<div style="background:#FFFAF3;color:#2B1A0B;font:12px/1.3 sans-serif;padding:6px 9px;'
+            f'border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.3);min-width:150px">'
+            f'<div style="font-weight:600">Tomorrow\'s solar availability</div>'
+            f'<div style="color:{MUTED};font-size:11px">kWh/m²/day</div>{rows}</div>')
+
+
+class _Legend(MacroElement):
+    """Legend as a Leaflet control, so it stays on the map in every view."""
+    _template = Template("""
+        {% macro script(this, kwargs) %}
+        var {{ this.get_name() }} = L.control({position: "bottomright"});
+        {{ this.get_name() }}.onAdd = function () {
+            var div = L.DomUtil.create("div", "solar-legend");
+            div.innerHTML = {{ this.html|tojson }};
+            return div;
+        };
+        {{ this.get_name() }}.addTo({{ this._parent.get_name() }});
+        {% endmacro %}
+    """)
+
+    def __init__(self, html: str):
+        super().__init__()
+        self._name = "Legend"
+        self.html = html
+
+
 def build_map(selected_region: str | None, categories: dict[str, str | None],
-              tomorrow_values: dict[str, float], selected_taluk: str | None = None) -> folium.Map:
+              tomorrow_values: dict[str, float], selected_taluk: str | None = None,
+              thresholds: tuple[float, float] | None = None) -> folium.Map:
     """Overview of the four regions (markers + outlines), or a zoomed region view
-    with its taluks. Clicking a feature returns its properties via st_folium."""
+    with its taluks. Clicking a feature returns its properties via st_folium.
+    `thresholds` = (low_below, high_from) adds the value ranges to the legend."""
     regions = load_layer("regions")["features"]
     m = folium.Map(tiles=None, control_scale=True, prefer_canvas=True)
     folium.TileLayer("OpenStreetMap", name="Base map", control=False, opacity=0.7,
-                     attr="© OpenStreetMap contributors | Boundaries: geoBoundaries / LGD (ODbL 1.0)").add_to(m)
+                     attr="© OpenStreetMap contributors | Boundaries: OpenStreetMap, "
+                          "Karaikal taluks via geoBoundaries / LGD (ODbL 1.0)").add_to(m)
 
     def region_style(feature):
         rid = feature["properties"]["region_id"]
@@ -101,6 +146,8 @@ def build_map(selected_region: str | None, categories: dict[str, str | None],
                                          f'transform:translate(14px,-8px);text-shadow:0 0 3px #fff,0 0 3px #fff">{label}</div>'),
             ).add_to(m)
         m.fit_bounds(_bounds(regions), padding=(40, 40))
+    shown = [selected_region] if selected_region else [f["properties"]["region_id"] for f in regions]
+    m.add_child(_Legend(legend_html(thresholds, any(categories.get(r) is None for r in shown))))
     return m
 
 

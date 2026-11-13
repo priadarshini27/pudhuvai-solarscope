@@ -353,12 +353,12 @@ The application should handle API failures, missing variables, incomplete foreca
 **Output:** Geographic configuration, validated GeoJSON files and interactive map layer.
 
 **Implementation:** `scripts/prepare_geo.py` builds the two map layers in `data/geo/`, and `src/geospatial/map_data.py` draws the map.
-- **Source:** geoBoundaries gbOpen IND ADM3, which gives sub-districts (taluks) from the Local Government Directory. Licence ODbL 1.0, with attribution shown on the map.
+- **Source:** OpenStreetMap taluk and district relations (the boundaries the base map draws). The Karaikal/Thirunallar split comes from geoBoundaries gbOpen IND ADM3 (Local Government Directory), clipped to the OSM Karaikal district. Licence ODbL 1.0, with attribution shown on the map.
 - **Taluks:** the 8 official taluks are used: Puducherry, Ozhukarai, Villianur and Bahour; Karaikal and Thirunallar; Mahe; Yanam.
-- **Region outlines:** built by merging each region's taluks. The ADM2 district layer is not used, because it puts Thirunallar inside its "Puducherry" district.
+- **Region outlines:** built by merging each region's taluks. OSM's "Puducherry" district relation is not used, because it also contains Mahe and Yanam.
 - **Checks:** every representative point lies inside its region.
 - **Shared grid cells:** each taluk records which other taluks share its region's grid cell, since all of them use the region's forecast and NASA values.
-- **Known gap:** the source outline for Yanam covers about 13 km², against an officially cited 30 km². This affects the map only, not the predictions.
+- **Areas:** Puducherry 296, Karaikal 161, Mahe 9.1 and Yanam 27.9 km², close to the officially cited figures (tests check this).
 
 ### Module 2: Historical Data Collection – NASA POWER
 

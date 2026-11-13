@@ -134,7 +134,8 @@ with col_map:
                  format_func=lambda t: "Whole region" if t == "region" else taluk_names[t])
     sel_taluk = None if ss.taluk_select == "region" else ss.taluk_select
 
-    fmap = build_map(sel_region, categories, tomorrow_vals, sel_taluk)
+    fmap = build_map(sel_region, categories, tomorrow_vals, sel_taluk,
+                     thresholds=(cfg["categories"]["low_below"], cfg["categories"]["high_from"]))
     out = st_folium(fmap, height=470, use_container_width=True, key=f"map_{sel_region}",
                     returned_objects=["last_active_drawing", "last_object_clicked"])
     sig = json.dumps([((out or {}).get("last_active_drawing") or {}).get("properties"),
@@ -148,7 +149,7 @@ with col_map:
             ss.pending_selection = (rid, tid)
             st.rerun()
     st.caption("Click a region marker or outline to open it; in a region, click a taluk. "
-               "Colour shows tomorrow's availability category.")
+               "Colour shows tomorrow's availability category (see the legend on the map).")
 
 # ------------------------------------------------------------------ forecast panel
 with col_panel:

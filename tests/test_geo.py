@@ -8,7 +8,7 @@ from shapely.geometry import Point, shape
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from src.geospatial.map_data import build_map, load_layer, region_from_click, taluks_of  # noqa: E402
+from src.geospatial.map_data import build_map, legend_html, load_layer, region_from_click, taluks_of  # noqa: E402
 
 LOCATIONS = {l["region_id"]: l for l in json.loads((ROOT / "config" / "locations.json").read_text(encoding="utf-8"))["regions"]}
 EXPECTED_TALUKS = {"puducherry": {"Puducherry", "Ozhukarai", "Villianur", "Bahour"},
@@ -37,6 +37,18 @@ def test_area_close_to_official_for_main_regions():
     area = {f["properties"]["region_id"]: f["properties"]["area_km2"] for f in load_layer("regions")["features"]}
     assert area["puducherry"] == pytest.approx(293, rel=0.05)
     assert area["karaikal"] == pytest.approx(161, rel=0.05)
+    assert area["mahe"] == pytest.approx(9, rel=0.15)
+    assert area["yanam"] == pytest.approx(30, rel=0.15)
+
+
+def test_karaikal_taluks_tile_the_region():
+    region = next(shape(f["geometry"]) for f in load_layer("regions")["features"]
+                  if f["properties"]["region_id"] == "karaikal")
+    taluks = [shape(f["geometry"]) for f in load_layer("taluks")["features"]
+              if f["properties"]["region_id"] == "karaikal"]
+    assert taluks[0].intersection(taluks[1]).area < 1e-3 * region.area
+    union = taluks[0].union(taluks[1])
+    assert union.symmetric_difference(region).area < 1e-3 * region.area
 
 
 def test_click_mapping():
@@ -51,6 +63,19 @@ def test_click_mapping():
 
 def test_build_map_overview_and_region():
     html = build_map(None, {"mahe": "high"}, {"mahe": 6.2}).get_root().render()
-    assert "Mahe: 6.2" in html and "geoBoundaries" in html
+    assert "Mahe: 6.2" in html and "Boundaries: OpenStreetMap" in html
     html = build_map("puducherry", {"puducherry": "low"}, {}, "puducherry:ozhukarai").get_root().render()
     assert "Ozhukarai" in html
+
+
+def test_map_legend_shows_categories_and_ranges():
+    html = legend_html((5.0, 6.0), show_unavailable=False)
+    for text in ["solar availability", "High", "Moderate", "Low", "≥ 6", "5–6", "&lt; 5"]:
+        assert text in html, text
+    assert "Unavailable" not in html
+    assert "Unavailable" in legend_html((5.0, 6.0), show_unavailable=True)
+    # attached to the map; a region without a forecast adds the Unavailable row
+    full = {"puducherry": "high", "karaikal": "moderate", "mahe": "low", "yanam": "low"}
+    assert "L.control" in build_map(None, full, {}, thresholds=(5.0, 6.0)).get_root().render()
+    assert "Unavailable" not in build_map(None, full, {}).get_root().render()
+    assert "Unavailable" in build_map(None, {"puducherry": "high"}, {}).get_root().render()
