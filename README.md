@@ -33,13 +33,25 @@ Tested with Python 3.14 on Windows. The commands below use the Windows `.venv\Sc
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\python -m pip install -r requirements.txt
+.\.venv\Scripts\python -m pip install -r requirements.txt -r requirements-dev.txt
 
 # run the dashboard (opens http://localhost:8501)
 .\.venv\Scripts\streamlit run src/dashboard/app.py
 ```
 
 The repository includes the processed data, the boundary layers and the trained model, so the dashboard runs straight away. It only needs internet access to fetch the live forecast.
+
+`requirements.txt` holds only what the dashboard needs, pinned to the versions the model was saved with. `requirements-dev.txt` adds pytest and the notebook tools.
+
+## Deployment (Streamlit Community Cloud)
+
+The app needs no secrets: the model and data are in the repository, and the forecast API is keyless.
+
+1. Sign in at [share.streamlit.io](https://share.streamlit.io) with GitHub.
+2. **Create app** → deploy from GitHub: this repository, branch `main`, main file path `src/dashboard/app.py`.
+3. Under **Advanced settings**, pick the newest Python version offered (3.13 or later), then **Deploy**.
+
+Every push to `main` redeploys the app. `.streamlit/config.toml` (the theme) is applied automatically. Prediction logs in `data/predictions/` live on temporary storage and reset when the app restarts. The free Open-Meteo API is for non-commercial use only (see [Data sources, licences and attribution](#data-sources-licences-and-attribution)).
 
 Live predictions on the command line:
 

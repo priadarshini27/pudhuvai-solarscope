@@ -1,0 +1,6 @@
+# Development extras: tests and notebooks. Install with
+#   pip install -r requirements.txt -r requirements-dev.txt
+pytest>=8
+ipykernel>=6.29
+nbformat>=5.10
+nbconvert>=7.16
