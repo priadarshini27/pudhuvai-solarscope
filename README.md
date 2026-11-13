@@ -45,13 +45,9 @@ The repository includes the processed data, the boundary layers and the trained 
 
 ## Deployment (Streamlit Community Cloud)
 
-The app needs no secrets: the model and data are in the repository, and the forecast API is keyless.
+https://pudhuvai-solarscope.streamlit.app/
 
-1. Sign in at [share.streamlit.io](https://share.streamlit.io) with GitHub.
-2. **Create app** → deploy from GitHub: this repository, branch `main`, main file path `src/dashboard/app.py`.
-3. Under **Advanced settings**, pick the newest Python version offered (3.13 or later), then **Deploy**.
-
-Every push to `main` redeploys the app. `.streamlit/config.toml` (the theme) is applied automatically. Prediction logs in `data/predictions/` live on temporary storage and reset when the app restarts. The free Open-Meteo API is for non-commercial use only (see [Data sources, licences and attribution](#data-sources-licences-and-attribution)).
+The free Open-Meteo API is for non-commercial use only (see [Data sources, licences and attribution](#data-sources-licences-and-attribution)).
 
 Live predictions on the command line:
 
