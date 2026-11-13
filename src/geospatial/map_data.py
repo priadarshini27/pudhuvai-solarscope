@@ -98,6 +98,9 @@ def build_map(selected_region: str | None, categories: dict[str, str | None],
     folium.TileLayer("OpenStreetMap", name="Base map", control=False, opacity=0.7,
                      attr="© OpenStreetMap contributors | Boundaries: OpenStreetMap, "
                           "Karaikal taluks via geoBoundaries / LGD (ODbL 1.0)").add_to(m)
+    # smaller credit line, so it fits on one line and leaves the scale bar visible
+    m.get_root().header.add_child(folium.Element(
+        "<style>.leaflet-control-attribution{font-size:9px;line-height:1.3;}</style>"))
 
     def region_style(feature):
         rid = feature["properties"]["region_id"]
